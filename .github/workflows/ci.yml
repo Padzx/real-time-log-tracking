@@ -30,15 +30,14 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build and Test with Gradle
-        run: ./gradlew clean build --warning-mode all
+        run: ./gradlew :log-ingestion:clean :log-ingestion:build --warning-mode all
 
-      - name: Install Snyk
-        run: npm install -g snyk
-
-      - name: Authenticate Snyk
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: snyk auth $SNYK_TOKEN
+      - name: Install Snyk CLI
+        uses: snyk/actions/setup@v2
+        with:
+          version: 'latest'
 
       - name: Run Snyk to check for vulnerabilities
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: snyk test --all-projects
