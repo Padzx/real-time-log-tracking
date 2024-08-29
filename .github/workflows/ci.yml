@@ -32,7 +32,15 @@ jobs:
       - name: Build and Test with Gradle
         run: ./gradlew :log-ingestion:clean :log-ingestion:build --warning-mode all
 
+      - name: Install Snyk CLI
+        uses: snyk/actions/setup@v2
+        with:
+          version: 'latest'
+
+      - name: Set JAVA_HOME
+        run: echo "JAVA_HOME=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64" >> $GITHUB_ENV
+
       - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/gradle-jdk17@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: snyk test --all-projects
