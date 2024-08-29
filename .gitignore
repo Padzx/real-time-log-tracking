@@ -1,0 +1,99 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+**/out/
+**/build/
+**/build/libs/
+**/build/reports/
+**/build/tmp/
+**/build/test-results/
+**/build/classes/
+**/build/resources/
+**/build/generated/
+**/build/.gradle/
+
+# Eclipse
+.classpath
+.project
+.settings/
+bin/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+*.log
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# JetBrains Rider
+.idea/
+*.sln
+*.user
+*.userossc
+*.suo
+*.ntvs
+*.njsproj
+*.sln.docstates
+*.tmp
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+*.bak
+*.old
+*.orig
+
+# Other unnecessary files
+*.log
+*.lock
+*.log.gz
+*.log.zip
+*.pid
+*.pid.lock
+*.dump
+*.wip
+*.wip.zip
+*.wip.gz
+*.history
+*.orig
+*.rej
+*.swo
+*.swp
+*~
+*.nib
+*.map
+*.map.gz
+*.swx
+*.bak
+*.ldb
+*.htaccess
+*.htpasswd
+*.bak2
+*.prev
+
+# Ignore sensitive files
+*.env
+.env.*
+.secret
+.secrets
+*.key
+*.crt
+*.pem
+
+# Exclude test reports (HTML, XML, etc.)
+test-results/
+reports/
