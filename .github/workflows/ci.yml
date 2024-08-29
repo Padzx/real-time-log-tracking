@@ -25,22 +25,16 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-
+        env:
+          JAVA_HOME: ${{ steps.setup-java.outputs.path }}
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
       - name: Build and Test with Gradle
         run: ./gradlew :log-ingestion:clean :log-ingestion:build --warning-mode all
 
-      - name: Install Snyk CLI
-        uses: snyk/actions/setup@v2
-        with:
-          version: 'latest'
-
-      - name: Set JAVA_HOME
-        run: echo "JAVA_HOME=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64" >> $GITHUB_ENV
-
-      - name: Run Snyk to check for vulnerabilities
+      - name: Run Snyk to check for vulnerabilities in Gradle project
+        uses: snyk/actions/gradle-jdk17@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: snyk test --all-projects
+          JAVA_HOME: ${{ steps.setup-java.outputs.path }}
