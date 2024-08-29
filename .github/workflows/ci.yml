@@ -33,7 +33,7 @@ jobs:
         run: ./gradlew :log-ingestion:clean :log-ingestion:build --warning-mode all
 
       - name: Install Snyk CLI
-        uses: snyk/actions/setup@v2
+        uses: snyk/actions/setup@v2.4.0
         with:
           version: 'latest'
 
