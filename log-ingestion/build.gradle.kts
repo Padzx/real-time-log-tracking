@@ -33,3 +33,7 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
+
+springBoot {
+    mainClass.set("org.example.LogIngestionApplication")
+}
