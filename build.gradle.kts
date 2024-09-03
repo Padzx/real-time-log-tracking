@@ -57,21 +57,7 @@ subprojects {
         }
     }
 
-
-    tasks.register<Test>("integrationTest") {
-        description = "Runs the integration tests."
-        group = "verification"
-        useJUnitPlatform {
-            includeTags("integration")
-        }
-        shouldRunAfter("test")
-        testLogging {
-            events("passed", "skipped", "failed")
-        }
-
-    }
-
     tasks.named("check") {
-        dependsOn("integrationTest")
+        dependsOn("test")
     }
 }
