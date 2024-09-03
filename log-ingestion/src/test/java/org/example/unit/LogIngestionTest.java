@@ -1,4 +1,4 @@
-package org.example;
+package org.example.unit;
 
 import org.example.controller.LogController;
 import org.example.service.LogService;

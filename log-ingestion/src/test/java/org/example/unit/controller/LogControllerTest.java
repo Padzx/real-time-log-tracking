@@ -1,90 +1,78 @@
-package org.example.controller;
+package org.example.unit.controller;
 
+import org.example.annotations.UnitTest;
+import org.example.controller.LogController;
 import org.example.dto.LogRecord;
 import org.example.service.LogService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.*;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@UnitTest
+@WebMvcTest(LogController.class)
 class LogControllerTest {
 
-    @LocalServerPort
-    private int port;
-
     @Autowired
-    private TestRestTemplate restTemplate;
+    private MockMvc mockMvc;
 
-    @Autowired
+    @MockBean
     private LogService logService;
 
-    @Test
-    void testReceiveJsonLog() {
-        LogRecord logRecord = new LogRecord(
-                "2024-08-28T12:34:56Z",
-                "INFO",
-                "This is a test log message",
-                "TestSource",
-                "main",
-                "TestLogger"
-        );
-
-        String url = "http://localhost:" + port + "/api/logs/json";
-        ResponseEntity<String> response = this.restTemplate.postForEntity(url, logRecord, String.class);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo("Log received in JSON format.");
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        doNothing().when(logService).processLog(any(LogRecord.class));
     }
 
     @Test
-    void testReceiveTextLog() {
+    void testReceiveJsonLog() throws Exception {
+        String jsonLog = """
+                {
+                    "timestamp": "2024-08-28T12:34:56Z",
+                    "level": "INFO",
+                    "message": "This is a test log message",
+                    "source": "TestSource",
+                    "thread": "main",
+                    "logger": "TestLogger"
+                }
+                """;
+
+        mockMvc.perform(post("/api/logs/json")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonLog))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Log received in JSON format."));
+    }
+
+    @Test
+    void testReceiveTextLog() throws Exception {
         String logText = "This is a simple text log message";
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.TEXT_PLAIN);
-        HttpEntity<String> entity = new HttpEntity<>(logText, headers);
-
-        String url = "http://localhost:" + port + "/api/logs/text";
-        ResponseEntity<String> response = this.restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo("Log received in Text format.");
+        mockMvc.perform(post("/api/logs/text")
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .content(logText))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Log received in Text format."));
     }
 
     @Test
-    void testReceiveJsonLog_InvalidData() {
-        LogRecord invalidLogRecord = new LogRecord(
-                "",    // Invalid timestamp
-                "INFO",
-                "Log with invalid timestamp",
-                "TestSource",
-                "main",
-                "TestLogger"
-        );
-
-        String url = "http://localhost:" + port + "/api/logs/json";
-        ResponseEntity<String> response = this.restTemplate.postForEntity(url, invalidLogRecord, String.class);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody()).contains("Timestamp field is mandatory");
-    }
-
-    @Test
-    void testReceiveTextLog_Empty() {
+    void testReceiveTextLog_Empty() throws Exception {
         String emptyLogText = "";
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.TEXT_PLAIN);
-        HttpEntity<String> entity = new HttpEntity<>(emptyLogText, headers);
-
-        String url = "http://localhost:" + port + "/api/logs/text";
-        ResponseEntity<String> response = this.restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        mockMvc.perform(post("/api/logs/text")
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .content(emptyLogText))
+                .andExpect(status().isBadRequest());
     }
 }

@@ -1,36 +1,27 @@
-package org.example.service;
+package org.example.unit.service;
 
+import org.example.annotations.UnitTest;
 import org.example.dto.LogRecord;
+import org.example.service.LogService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
+@UnitTest
 @SpringBootTest
 class LogServiceTest {
 
+    @InjectMocks
     private LogService logService;
 
     @BeforeEach
     void setUp() {
-        logService = new LogService();
-    }
-
-    @Test
-    void testProcessLog_ValidLog() {
-        LogRecord validLog = new LogRecord(
-                "2024-08-28T12:34:56Z",
-                "INFO",
-                "This is a valid log message",
-                "TestSource",
-                "main",
-                "TestLogger"
-        );
-
-        logService.processLog(validLog);
-        assertThat(true).isTrue();
+        MockitoAnnotations.openMocks(this); // Initialize the mocks
     }
 
     @Test
@@ -46,7 +37,7 @@ class LogServiceTest {
 
         assertThatThrownBy(() -> logService.processLog(invalidTimestampLog))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Invalid timestamp format");
+                .hasMessageContaining("Invalid timestamp format.");
     }
 
     @Test
@@ -62,7 +53,7 @@ class LogServiceTest {
 
         assertThatThrownBy(() -> logService.processLog(emptyMessageLog))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Message field is mandatory");
+                .hasMessageContaining("The 'message' field is mandatory.");
     }
 
     @Test
@@ -84,6 +75,30 @@ class LogServiceTest {
 
         assertThatThrownBy(() -> logService.parsePlaintextLog(emptyLogText))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Message field is mandatory");
+                .hasMessageContaining("The 'message' field is mandatory.");
+    }
+
+    @Test
+    void testParseJsonLog() {
+        String jsonLogString = """
+                {
+                    "timestamp": "2024-08-28T12:34:56Z",
+                    "level": "INFO",
+                    "message": "This is a JSON log message",
+                    "source": "JsonSource",
+                    "thread": "json-thread",
+                    "logger": "JsonLogger"
+                }
+                """;
+
+        LogRecord result = logService.parseJsonLog(jsonLogString);
+
+        assertThat(result).isNotNull();
+        assertThat(result.timestamp()).isEqualTo("2024-08-28T12:34:56Z");
+        assertThat(result.level()).isEqualTo("INFO");
+        assertThat(result.message()).isEqualTo("This is a JSON log message");
+        assertThat(result.source()).isEqualTo("JsonSource");
+        assertThat(result.thread()).isEqualTo("json-thread");
+        assertThat(result.logger()).isEqualTo("JsonLogger");
     }
 }
