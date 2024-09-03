@@ -50,6 +50,14 @@ public class LogIngestionIntegrationTest {
 
     @BeforeAll
     static void setup() {
+
+        String useDockerNetwork = System.getenv("USE_DOCKER_NETWORK");
+        if ("true".equals(useDockerNetwork)) {
+            System.setProperty("testcontainers.useDockerForNetwork", "true");
+            System.setProperty("testcontainers.reuse.enable", "true");
+            System.setProperty("testcontainers.network.name", "ci-network");
+        }
+
         try {
             kafkaContainer.start();
             String bootstrapServers = kafkaContainer.getBootstrapServers();
