@@ -52,7 +52,9 @@ subprojects {
         }
     }
 
-    tasks.test {
+    tasks.register<Test>("unitTest") {
+        description = "Runs only unit tests."
+        group = "verification"
         useJUnitPlatform {
             excludeTags("integration")
         }
@@ -62,6 +64,6 @@ subprojects {
     }
 
     tasks.named("check") {
-        dependsOn("test")
+        dependsOn("unitTest")
     }
 }

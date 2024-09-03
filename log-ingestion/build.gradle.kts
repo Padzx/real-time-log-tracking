@@ -56,15 +56,3 @@ springBoot {
     mainClass.set("org.example.LogIngestionApplication")
 }
 
-tasks.test {
-    useJUnitPlatform {
-        excludeTags("integration") // Exclude integration tests by default
-    }
-    testLogging {
-        events("passed", "skipped", "failed")
-    }
-}
-
-tasks.named("check") {
-    dependsOn("test")
-}
