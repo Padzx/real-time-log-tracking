@@ -25,10 +25,16 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Verify Java Installation
+        run: java -version
+
+      - name: Set JAVA_HOME
+        run: echo "JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))" >> $GITHUB_ENV
+
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      - name: Build and Test with Gradle
+      - name: Build Project
         run: ./gradlew :log-ingestion:clean build --warning-mode all
 
       - name: Run Unit Tests
