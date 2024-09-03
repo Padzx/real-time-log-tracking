@@ -45,6 +45,8 @@ jobs:
 
       - name: Run Integration Tests
         run: ./gradlew :log-ingestion:integrationTest --warning-mode all
+        env:
+          DOCKER_HOST: tcp://localhost:9093
 
       - name: Run Snyk to check for vulnerabilities in Gradle project
         uses: snyk/actions/gradle-jdk17@master
