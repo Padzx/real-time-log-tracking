@@ -4,6 +4,7 @@ import org.example.annotations.UnitTest;
 import org.example.dto.LogRecord;
 import org.example.service.LogService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
@@ -13,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @UnitTest
+@Tag("unit")
 @SpringBootTest
 class LogServiceTest {
 

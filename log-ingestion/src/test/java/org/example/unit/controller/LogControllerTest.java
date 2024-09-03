@@ -5,6 +5,7 @@ import org.example.controller.LogController;
 import org.example.dto.LogRecord;
 import org.example.service.LogService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @UnitTest
+@Tag("unit")
 @WebMvcTest(LogController.class)
 class LogControllerTest {
 
