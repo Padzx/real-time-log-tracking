@@ -21,13 +21,55 @@ subprojects {
     apply(plugin = "org.springframework.boot")
     apply(plugin = "io.spring.dependency-management")
 
+    repositories {
+        mavenCentral()
+    }
+
     dependencies {
         implementation("org.springframework.boot:spring-boot-starter")
+        implementation("org.springframework.boot:spring-boot-starter-web")
+        implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+        implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")
+        implementation("jakarta.validation:jakarta.validation-api:3.0.2")
+
+        implementation("org.springframework.kafka:spring-kafka:3.2.7")
+        implementation("com.h2database:h2:2.2.222")
+        implementation("org.apache.commons:commons-compress:1.27.1")
+
         testImplementation(platform("org.junit:junit-bom:5.10.0"))
         testImplementation("org.junit.jupiter:junit-jupiter")
+        testImplementation("org.springframework.boot:spring-boot-starter-test") {
+            exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
+        }
+        testImplementation("org.assertj:assertj-core:3.26.3")
+        testImplementation("org.springframework.kafka:spring-kafka-test:3.2.7")
+        testImplementation("org.testcontainers:junit-jupiter:1.24.1")
+        testImplementation("org.testcontainers:kafka:1.20.1")
+        testImplementation("org.testcontainers:postgresql:1.20.1")
     }
 
     tasks.test {
-        useJUnitPlatform()
+        useJUnitPlatform {
+            excludeTags("integration")
+        }
+        testLogging {
+            events("passed", "skipped", "failed")
+        }
+    }
+
+    tasks.register<Test>("integrationTest") {
+        description = "Runs the integration tests."
+        group = "verification"
+        useJUnitPlatform {
+            includeTags("integration")
+        }
+        shouldRunAfter("test")
+        testLogging {
+            events("passed", "skipped", "failed")
+        }
+    }
+
+    tasks.named("check") {
+        dependsOn("integrationTest")
     }
 }
