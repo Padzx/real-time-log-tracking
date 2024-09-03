@@ -46,7 +46,7 @@ dependencies {
 
     // Conditionally include Testcontainers for local development
     if (!System.getenv().containsKey("CI")) {
-        testImplementation("org.testcontainers:junit-jupiter:1.20.1")
+        testImplementation("org.testcontainers:junit-jupiter:1.19.7")
         testImplementation("org.testcontainers:kafka:1.20.1")
         testImplementation("org.testcontainers:postgresql:1.20.1")
     }
