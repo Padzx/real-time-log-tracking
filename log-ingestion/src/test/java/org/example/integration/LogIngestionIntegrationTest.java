@@ -38,7 +38,7 @@ public class LogIngestionIntegrationTest {
             .withNetworkAliases("kafka")
             .withEnv("KAFKA_AUTO_CREATE_TOPICS_ENABLE", "true")
             .withEnv("KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR", "1")
-            .withExposedPorts(9092)
+            .withExposedPorts(9093)
             .waitingFor(new LogMessageWaitStrategy()
                     .withRegEx(".*\\[KafkaServer id=\\d+] started.*\\n")
                     .withStartupTimeout(Duration.ofMinutes(5)));
@@ -51,13 +51,6 @@ public class LogIngestionIntegrationTest {
 
     @BeforeAll
     static void setup() {
-        String useDockerNetwork = System.getenv("USE_DOCKER_NETWORK");
-        if ("true".equals(useDockerNetwork)) {
-            System.setProperty("testcontainers.useDockerForNetwork", "true");
-            System.setProperty("testcontainers.reuse.enable", "true");
-            System.setProperty("testcontainers.network.name", "ci-network");
-        }
-
         try {
             kafkaContainer.start();
             String bootstrapServers = kafkaContainer.getBootstrapServers();
@@ -86,7 +79,7 @@ public class LogIngestionIntegrationTest {
                 "TestLogger"
         );
 
-        String url = String.format("https://%s:%d/api/logs/json", getHost(), port);
+        String url = String.format("http://localhost:%d/api/logs/json", port); // Use HTTP and localhost
         ResponseEntity<String> response = this.restTemplate.postForEntity(url, logRecord, String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -102,17 +95,11 @@ public class LogIngestionIntegrationTest {
         headers.setContentType(MediaType.TEXT_PLAIN);
         HttpEntity<String> entity = new HttpEntity<>(logText, headers);
 
-        String url = String.format("https://%s:%d/api/logs/text", getHost(), port);
+        String url = String.format("http://localhost:%d/api/logs/text", port); // Use HTTP and localhost
         ResponseEntity<String> response = this.restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo("Log received in Text format.");
         logger.info("Successfully tested Text log ingestion through the microservice.");
-    }
-
-    private String getHost() {
-        // Use "host.docker.internal" when running in a CI Docker environment, "localhost" otherwise
-        String useDockerNetwork = System.getenv("USE_DOCKER_NETWORK");
-        return "true".equals(useDockerNetwork) ? "host.docker.internal" : "localhost";
     }
 }
