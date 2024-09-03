@@ -15,7 +15,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Check out code
         uses: actions/checkout@v3
@@ -29,16 +28,11 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      - name: Cache Gradle dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+      - name: Build and Test with Gradle
+        run: ./gradlew :log-ingestion:clean :log-ingestion:build --warning-mode all
 
-      - name: Build and run unit tests with Gradle
-        run: ./gradlew :log-ingestion:clean :log-ingestion:build :log-ingestion:unitTest --warning-mode all
+      - name: Run Unit Tests
+        run: ./gradlew :log-ingestion:unitTest --warning-mode all
 
       - name: Run Snyk to check for vulnerabilities in Gradle project
         uses: snyk/actions/gradle-jdk17@master
