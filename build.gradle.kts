@@ -43,9 +43,13 @@ subprojects {
         }
         testImplementation("org.assertj:assertj-core:3.26.3")
         testImplementation("org.springframework.kafka:spring-kafka-test:3.2.7")
-        testImplementation("org.testcontainers:junit-jupiter:1.24.1")
-        testImplementation("org.testcontainers:kafka:1.20.1")
-        testImplementation("org.testcontainers:postgresql:1.20.1")
+
+
+        if (!System.getenv().containsKey("CI")) {
+            testImplementation("org.testcontainers:junit-jupiter:1.19.7")
+            testImplementation("org.testcontainers:kafka:1.20.1")
+            testImplementation("org.testcontainers:postgresql:1.20.1")
+        }
     }
 
     tasks.test {
