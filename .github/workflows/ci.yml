@@ -37,11 +37,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Build and Test with Gradle
-        run: ./gradlew :log-ingestion:clean :log-ingestion:build --warning-mode all
-
-      - name: Run Unit Tests
-        run: ./gradlew :log-ingestion:test --warning-mode all
+      - name: Build and Run Unit Tests with Gradle
+        run: ./gradlew :log-ingestion:clean :log-ingestion:build :log-ingestion:unitTest --warning-mode all
 
       - name: Run Snyk to check for vulnerabilities in Gradle project
         uses: snyk/actions/gradle-jdk17@master
