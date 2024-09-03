@@ -73,11 +73,6 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Analyze Code with SonarQube
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
       - name: Upload Coverage Reports
         uses: actions/upload-artifact@v3
         with:
