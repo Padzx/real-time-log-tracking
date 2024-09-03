@@ -1,18 +1,20 @@
 package org.example.controller;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.example.service.LogService;
 import org.example.dto.LogRecord;
+import org.example.service.LogService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("api/logs")
 public class LogController {
 
+    private static final Logger logger = LoggerFactory.getLogger(LogController.class);
     private final LogService logService;
 
     // Dependency Injection via constructor
@@ -23,11 +25,13 @@ public class LogController {
 
     // Endpoint to receive logs in JSON format
     @PostMapping(value = "/json", consumes = "application/json")
-    public ResponseEntity<String> receiveJsonLog(@RequestBody LogRecord logRecord) {
+    public ResponseEntity<String> receiveJsonLog(@Valid @RequestBody LogRecord logRecord) {
         try {
             logService.processLog(logRecord);  // Delegate the processing to the service layer
+            logger.info("Received JSON log: {}", logRecord);
             return ResponseEntity.ok("Log received in JSON format.");
         } catch (IllegalArgumentException e) {
+            logger.error("Failed to process JSON log: {}", logRecord, e);
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -38,12 +42,13 @@ public class LogController {
         try {
             LogRecord logRecord = logService.parsePlaintextLog(logText);
             logService.processLog(logRecord);  // Delegate the processing to the service layer
+            logger.info("Received text log: {}", logText);
             return ResponseEntity.ok("Log received in Text format.");
         } catch (IllegalArgumentException e) {
+            logger.error("Failed to process text log: {}", logText, e);
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
     // Future extension points:
     // - You can add more methods here to handle different formats.
     // - If customization is needed, provide instructions or comments for other developers.
