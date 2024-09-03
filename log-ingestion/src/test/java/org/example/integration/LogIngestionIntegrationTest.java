@@ -35,9 +35,10 @@ public class LogIngestionIntegrationTest {
     @Container
     private static final KafkaContainer kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.5.0"))
             .withNetwork(network)
+            .withNetworkAliases("kafka")
             .withEnv("KAFKA_AUTO_CREATE_TOPICS_ENABLE", "true")
             .withEnv("KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR", "1")
-            .withExposedPorts(9093)
+            .withExposedPorts(9092)
             .waitingFor(new LogMessageWaitStrategy()
                     .withRegEx(".*\\[KafkaServer id=\\d+] started.*\\n")
                     .withStartupTimeout(Duration.ofMinutes(5)));
@@ -50,7 +51,6 @@ public class LogIngestionIntegrationTest {
 
     @BeforeAll
     static void setup() {
-
         String useDockerNetwork = System.getenv("USE_DOCKER_NETWORK");
         if ("true".equals(useDockerNetwork)) {
             System.setProperty("testcontainers.useDockerForNetwork", "true");
@@ -76,7 +76,7 @@ public class LogIngestionIntegrationTest {
     }
 
     @Test
-    void testReceiveJsonLog() {
+    void testMicroserviceWithKafkaReceiveJsonLog() {
         LogRecord logRecord = new LogRecord(
                 "2024-08-28T12:34:56Z",
                 "INFO",
@@ -86,27 +86,33 @@ public class LogIngestionIntegrationTest {
                 "TestLogger"
         );
 
-        String url = "http://localhost:" + port + "/api/logs/json";
+        String url = String.format("https://%s:%d/api/logs/json", getHost(), port);
         ResponseEntity<String> response = this.restTemplate.postForEntity(url, logRecord, String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo("Log received in JSON format.");
-        logger.info("Successfully tested JSON log ingestion.");
+        logger.info("Successfully tested JSON log ingestion through the microservice.");
     }
 
     @Test
-    void testReceiveTextLog() {
+    void testMicroserviceWithKafkaReceiveTextLog() {
         String logText = "This is a simple text log message";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.TEXT_PLAIN);
         HttpEntity<String> entity = new HttpEntity<>(logText, headers);
 
-        String url = "http://localhost:" + port + "/api/logs/text";
+        String url = String.format("https://%s:%d/api/logs/text", getHost(), port);
         ResponseEntity<String> response = this.restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo("Log received in Text format.");
-        logger.info("Successfully tested Text log ingestion.");
+        logger.info("Successfully tested Text log ingestion through the microservice.");
+    }
+
+    private String getHost() {
+        // Use "host.docker.internal" when running in a CI Docker environment, "localhost" otherwise
+        String useDockerNetwork = System.getenv("USE_DOCKER_NETWORK");
+        return "true".equals(useDockerNetwork) ? "host.docker.internal" : "localhost";
     }
 }
