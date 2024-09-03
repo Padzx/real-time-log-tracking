@@ -67,6 +67,11 @@ subprojects {
         testLogging {
             events("passed", "skipped", "failed")
         }
+        doFirst {
+            // Settings specific to TestContainers
+            System.setProperty("testcontainers.reuse.enable", "true")
+            System.setProperty("testcontainers.network.name", "my_network")
+        }
     }
 
     tasks.named("check") {
