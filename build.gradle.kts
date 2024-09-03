@@ -57,6 +57,7 @@ subprojects {
         }
     }
 
+
     tasks.register<Test>("integrationTest") {
         description = "Runs the integration tests."
         group = "verification"
@@ -67,14 +68,7 @@ subprojects {
         testLogging {
             events("passed", "skipped", "failed")
         }
-        doFirst {
-            // Settings specific to CI environments
-            val useDockerNetwork = System.getenv("USE_DOCKER_NETWORK") ?: "false"
-            if (useDockerNetwork == "true") {
-                System.setProperty("testcontainers.reuse.enable", "true")
-                System.setProperty("testcontainers.network.name", "ci-network")
-            }
-        }
+
     }
 
     tasks.named("check") {
