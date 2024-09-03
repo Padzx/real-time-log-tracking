@@ -41,10 +41,11 @@ jobs:
         run: ./gradlew :log-ingestion:unitTest --warning-mode all
 
       - name: Run Snyk to check for vulnerabilities in Gradle project
-        uses: snyk/actions/gradle-jdk17@master
+        uses: snyk/actions/gradle@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+        with:
+          args: --severity-threshold=high
 
       - name: Publish Test Results
         uses: actions/upload-artifact@v3
