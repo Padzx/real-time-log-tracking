@@ -28,6 +28,9 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
+      - name: Build and Test with Gradle
+        run: ./gradlew :log-ingestion:clean build --warning-mode all
+
       - name: Run Unit Tests
         run: ./gradlew :log-ingestion:unitTest --warning-mode all
 
