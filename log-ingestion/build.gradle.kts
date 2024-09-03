@@ -44,12 +44,27 @@ dependencies {
     // Kafka Test dependencies
     testImplementation("org.springframework.kafka:spring-kafka-test:3.2.3")
 
-    // Testcontainers for integration testing
-    testImplementation("org.testcontainers:junit-jupiter:1.20.1")
-    testImplementation("org.testcontainers:kafka:1.20.1")
-    testImplementation("org.testcontainers:postgresql:1.20.1")
+    // Conditionally include Testcontainers for local development
+    if (!System.getenv().containsKey("CI")) {
+        testImplementation("org.testcontainers:junit-jupiter:1.20.1")
+        testImplementation("org.testcontainers:kafka:1.20.1")
+        testImplementation("org.testcontainers:postgresql:1.20.1")
+    }
 }
 
 springBoot {
     mainClass.set("org.example.LogIngestionApplication")
+}
+
+tasks.test {
+    useJUnitPlatform {
+        excludeTags("integration") // Exclude integration tests by default
+    }
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
+}
+
+tasks.named("check") {
+    dependsOn("test")
 }
