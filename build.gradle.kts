@@ -68,9 +68,12 @@ subprojects {
             events("passed", "skipped", "failed")
         }
         doFirst {
-            // Settings specific to TestContainers
-            System.setProperty("testcontainers.reuse.enable", "true")
-            System.setProperty("testcontainers.network.name", "my_network")
+            // Settings specific to CI environments
+            val useDockerNetwork = System.getenv("USE_DOCKER_NETWORK") ?: "false"
+            if (useDockerNetwork == "true") {
+                System.setProperty("testcontainers.reuse.enable", "true")
+                System.setProperty("testcontainers.network.name", "ci-network")
+            }
         }
     }
 
