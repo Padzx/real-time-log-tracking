@@ -32,6 +32,7 @@ subprojects {
         implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")
         implementation("jakarta.validation:jakarta.validation-api:3.0.2")
 
+
         implementation("org.springframework.kafka:spring-kafka:3.2.7")
         implementation("com.h2database:h2:2.2.222")
         implementation("org.apache.commons:commons-compress:1.27.1")
@@ -43,27 +44,9 @@ subprojects {
         }
         testImplementation("org.assertj:assertj-core:3.26.3")
         testImplementation("org.springframework.kafka:spring-kafka-test:3.2.7")
-
-
-        if (!System.getenv().containsKey("CI")) {
-            testImplementation("org.testcontainers:junit-jupiter:1.19.7")
-            testImplementation("org.testcontainers:kafka:1.20.1")
-            testImplementation("org.testcontainers:postgresql:1.20.1")
-        }
-    }
-
-    tasks.register<Test>("unitTest") {
-        description = "Runs only unit tests."
-        group = "verification"
-        useJUnitPlatform {
-            excludeTags("integration")
-        }
-        testLogging {
-            events("passed", "skipped", "failed")
-        }
     }
 
     tasks.named("check") {
-        dependsOn("unitTest")
+        dependsOn("test")
     }
 }
