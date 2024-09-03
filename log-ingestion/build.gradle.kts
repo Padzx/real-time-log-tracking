@@ -53,7 +53,7 @@ tasks.register<Test>("unitTest") {
     description = "Runs only unit tests."
     group = "verification"
     useJUnitPlatform {
-        excludeTags("integration") // Exclude integration tests
+        includeTags("unit") // Include only unit tests
     }
     testLogging {
         events("passed", "skipped", "failed")
