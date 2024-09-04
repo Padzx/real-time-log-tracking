@@ -2,6 +2,7 @@ plugins {
     id("java")
     id("org.springframework.boot") version "3.3.3"
     id("io.spring.dependency-management") version "1.1.6"
+    id("io.snyk.gradle.plugin.snykplugin") version "0.6.1"
 }
 
 group = "org.example"
@@ -36,11 +37,10 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.24.2")
     testImplementation("org.springframework.kafka:spring-kafka-test:3.2.3")
 
-        // Testcontainers dependencies
-        testImplementation("org.testcontainers:junit-jupiter:1.19.7")
-        testImplementation("org.testcontainers:kafka:1.20.1")
-        testImplementation("org.testcontainers:postgresql:1.20.1")
-
+    // Testcontainers dependencies
+    testImplementation("org.testcontainers:junit-jupiter:1.19.7")
+    testImplementation("org.testcontainers:kafka:1.20.1")
+    testImplementation("org.testcontainers:postgresql:1.20.1")
 }
 
 springBoot {
