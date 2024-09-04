@@ -28,9 +28,6 @@ jobs:
       - name: Verify Java Installation
         run: java -version
 
-      - name: Set JAVA_HOME
-        run: echo "JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))" >> $GITHUB_ENV
-
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
@@ -40,15 +37,27 @@ jobs:
       - name: Run Unit Tests
         run: ./gradlew :log-ingestion:unitTest --warning-mode all
 
+      - name: Publish Test Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Test Results
+          path: '**/build/test-results/**/*.xml'
+
+  security:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: Run Snyk to check for vulnerabilities in Gradle project
         uses: snyk/actions/gradle@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           args: --severity-threshold=high
-
-      - name: Publish Test Results
-        uses: actions/upload-artifact@v3
-        with:
-          name: Test Results
-          path: '**/build/test-results/**/*.xml'
