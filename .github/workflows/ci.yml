@@ -49,6 +49,9 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Verify Java Installation
+        run: java -version
+
       - name: Run Snyk to check for vulnerabilities in Gradle project
         uses: snyk/actions/gradle@master
         env:
