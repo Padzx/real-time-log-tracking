@@ -2,6 +2,7 @@ plugins {
     id("org.springframework.boot") version "3.3.3" apply false
     id("io.spring.dependency-management") version "1.1.6" apply false
     id("java")
+    id("io.snyk.gradle.plugin.snykplugin") version "0.6.1" apply false
 }
 
 group = "org.example"
@@ -20,6 +21,7 @@ subprojects {
     apply(plugin = "java")
     apply(plugin = "org.springframework.boot")
     apply(plugin = "io.spring.dependency-management")
+    apply(plugin = "io.snyk.gradle.plugin.snykplugin")
 
     repositories {
         mavenCentral()
