@@ -2,7 +2,6 @@ plugins {
     id("java")
     id("org.springframework.boot") version "3.3.3"
     id("io.spring.dependency-management") version "1.1.6"
-    id("io.snyk.gradle.plugin.snykplugin") version "0.6.1"
 }
 
 group = "org.example"
