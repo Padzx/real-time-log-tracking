@@ -32,7 +32,6 @@ jobs:
         run: |
           java -version
           echo "JAVA_HOME is set to: $JAVA_HOME"
-
       - name: Cache Gradle dependencies
         id: cache-gradle
         uses: actions/cache@v3
@@ -41,7 +40,6 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-
   log-ingestion:
     needs: setup
     runs-on: ubuntu-latest
@@ -50,6 +48,16 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
 
+      - name: Set up JDK 17 for Gradle
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Verify Java Installation
+        run: |
+          java -version
+          echo "JAVA_HOME is set to: $JAVA_HOME"
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
@@ -62,7 +70,6 @@ jobs:
         run: ./gradlew :log-ingestion:unitTest --warning-mode all
         env:
           JAVA_HOME: ${{ needs.setup.outputs.java-home }}
-
       - name: Publish Test Results - Log Ingestion
         uses: actions/upload-artifact@v3
         with:
@@ -87,7 +94,6 @@ jobs:
         run: |
           java -version
           echo "JAVA_HOME is set to: $JAVA_HOME"
-
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
