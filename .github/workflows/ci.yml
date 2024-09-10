@@ -13,14 +13,44 @@ on:
       - feature/**
 
 jobs:
-  build:
+  setup:
     runs-on: ubuntu-latest
-
+    outputs:
+      java-home: ${{ steps.set-up-jdk.outputs.java-home }}
     steps:
       - name: Check out code
         uses: actions/checkout@v3
 
       - name: Set up JDK 17
+        id: set-up-jdk
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Verify Java Installation
+        run: |
+          java -version
+          echo "JAVA_HOME is set to: $JAVA_HOME"
+
+      - name: Cache Gradle dependencies
+        id: cache-gradle
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+  log-ingestion:
+    needs: setup
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'log-ingestion') || github.ref == 'refs/heads/feature/log-ingestion-microservice'
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17 for Gradle
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
@@ -34,22 +64,17 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      - name: Cache Gradle dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
-      - name: Build Project
+      - name: Build Project - Log Ingestion
         run: ./gradlew :log-ingestion:clean :log-ingestion:build --warning-mode all
+        env:
+          JAVA_HOME: ${{ needs.setup.outputs.java-home }}
 
-      - name: Run Unit Tests
+      - name: Run Unit Tests - Log Ingestion
         run: ./gradlew :log-ingestion:unitTest --warning-mode all
-
-      - name: Publish Test Results
+        env:
+          JAVA_HOME: ${{ needs.setup.outputs.java-home }}
+      - name: Publish Test Results - Log Ingestion
         uses: actions/upload-artifact@v3
         with:
-          name: Test Results
-          path: '**/build/test-results/**/*.xml'
+          name: Log Ingestion Test Results
+          path: '**/log-ingestion/build/test-results/**/*.xml'
