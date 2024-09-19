@@ -48,24 +48,24 @@ public class LogProcessingService {
         String processedTimestamp = Instant.now().toString();
         String category = determineCategory(logRecord.getLevel());
 
-        return new LogRecord(
-                logRecord.getTimestamp(),
-                logRecord.getLevel(),
-                processedMessage,
-                logRecord.getSource(),
-                logRecord.getThread(),
-                logRecord.getLogger(),
-                processedTimestamp,
-                category,
-                tags,
-                "processed"
-        );
+        return LogRecord.builder()
+                .timestamp(logRecord.getTimestamp())
+                .level(logRecord.getLevel())
+                .message(processedMessage)
+                .source(logRecord.getSource())
+                .thread(logRecord.getThread())
+                .logger(logRecord.getLogger())
+                .processedTimestamp(processedTimestamp)
+                .category(category)
+                .tags(tags)
+                .status("processed")
+                .build();
     }
 
     public void saveProcessedLog(LogRecord processedLog) {
         LogProcessing entity = new LogProcessing();
         entity.setTimestamp(Instant.parse(processedLog.getTimestamp())); // Parse String to Instant
-        entity.setLevel(processedLog.getLevel());
+        entity.setLevel(processedLog.getLevel().name()); // Convert LogLevel to String using .name()
         entity.setMessage(processedLog.getMessage());
         entity.setSource(processedLog.getSource());
         entity.setThread(processedLog.getThread());
@@ -79,11 +79,11 @@ public class LogProcessingService {
         logger.info("Persisted processed log to PostgreSQL: {}", entity);
     }
 
-    private String determineCategory(String level) {
+    private String determineCategory(LogRecord.LogLevel level) {
         return switch (level) {
-            case "ERROR" -> "Critical";
-            case "WARN" -> "Warning";
-            case "INFO" -> "Information";
+            case ERROR -> "Critical";
+            case WARN -> "Warning";
+            case INFO -> "Information";
             default -> "General";
         };
     }

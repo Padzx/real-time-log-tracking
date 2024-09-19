@@ -1,21 +1,27 @@
 package org.example.service;
 
 import org.example.dto.LogRecord;
+import org.springframework.stereotype.Service;
 
+@Service
 public class LogService {
 
     public void processLog(LogRecord logRecord) {
-        // Acessando os campos através dos getters
+
         String timestamp = logRecord.getTimestamp();
-        String level = logRecord.getLevel();
+        LogRecord.LogLevel level = logRecord.getLevel();
         String message = logRecord.getMessage();
         String source = logRecord.getSource();
         String thread = logRecord.getThread();
         String logger = logRecord.getLogger();
 
-        // Processar o log (Exemplo de uso)
-        System.out.println("Processing log: " + logRecord.toString());
+        // Example of log processing
+        if (level == LogRecord.LogLevel.ERROR) {
+            System.err.println("Error log: " + message + " from " + logger + " at " + timestamp);
+        } else {
+            System.out.println("Processing log: " + message + " from " + logger + " at " + timestamp);
+        }
 
-        // Aqui você poderia adicionar lógica adicional para manipulação dos logs
+        // Additional log handling logic can be added here
     }
 }
