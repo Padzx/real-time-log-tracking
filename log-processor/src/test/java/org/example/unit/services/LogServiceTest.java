@@ -1,8 +1,10 @@
 package org.example.unit.services;
 
+import org.example.annotations.UnitTest;
 import org.example.dto.LogRecord;
 import org.example.service.LogService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -10,6 +12,8 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@UnitTest
+@Tag("unit")
 class LogServiceTest {
 
     private LogService logService;
@@ -25,18 +29,18 @@ class LogServiceTest {
         Map<String, String> tags = new HashMap<>();
         tags.put("environment", "production");
 
-        LogRecord log = new LogRecord(
-                "2024-09-12T12:00:00.000Z",
-                "INFO",
-                "Application started successfully.",
-                "MainApplication",
-                "main",
-                "org.example.MainApplication",
-                null, // No processed timestamp initially
-                "SYSTEM",
-                tags,
-                "NEW"
-        );
+        LogRecord log = LogRecord.builder()
+                .timestamp("2024-09-12T12:00:00.000Z")
+                .level(LogRecord.LogLevel.INFO)
+                .message("Application started successfully.")
+                .source("MainApplication")
+                .thread("main")
+                .logger("org.example.MainApplication")
+                .processedTimestamp(null) // No processed timestamp initially
+                .category("SYSTEM")
+                .tags(tags)
+                .status("NEW")
+                .build();
 
         // Act
         logService.processLog(log);
@@ -44,7 +48,7 @@ class LogServiceTest {
         // Assert
         assertNotNull(log);
         assertEquals("2024-09-12T12:00:00.000Z", log.getTimestamp());
-        assertEquals("INFO", log.getLevel());
+        assertEquals(LogRecord.LogLevel.INFO, log.getLevel());
         assertEquals("Application started successfully.", log.getMessage());
         assertEquals("MainApplication", log.getSource());
         assertEquals("main", log.getThread());
@@ -56,18 +60,11 @@ class LogServiceTest {
     @Test
     void testProcessLogWithInvalidTimestamp() {
         // Arrange
-        LogRecord log = new LogRecord(
-                "", // Invalid timestamp
-                "ERROR",
-                "Error occurred while processing.",
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
+        LogRecord log = LogRecord.builder()
+                .timestamp("") // Invalid timestamp
+                .level(LogRecord.LogLevel.ERROR)
+                .message("Error occurred while processing.")
+                .build();
 
         // Act
         logService.processLog(log);
@@ -75,23 +72,17 @@ class LogServiceTest {
         // Assert
         assertNotNull(log);
         assertEquals("", log.getTimestamp());
+        assertEquals(LogRecord.LogLevel.ERROR, log.getLevel());
     }
 
     @Test
     void testProcessLogWithNullLevel() {
         // Arrange
-        LogRecord log = new LogRecord(
-                "2024-09-12T12:00:00.000Z",
-                null, // Null level
-                "Warning issued for configuration.",
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
+        LogRecord log = LogRecord.builder()
+                .timestamp("2024-09-12T12:00:00.000Z")
+                .level(null) // Null level
+                .message("Warning issued for configuration.")
+                .build();
 
         // Act
         logService.processLog(log);
@@ -104,18 +95,11 @@ class LogServiceTest {
     @Test
     void testProcessLogWithBlankMessage() {
         // Arrange
-        LogRecord log = new LogRecord(
-                "2024-09-12T12:00:00.000Z",
-                "WARN",
-                "", // Blank message
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
+        LogRecord log = LogRecord.builder()
+                .timestamp("2024-09-12T12:00:00.000Z")
+                .level(LogRecord.LogLevel.WARN)
+                .message("") // Blank message
+                .build();
 
         // Act
         logService.processLog(log);

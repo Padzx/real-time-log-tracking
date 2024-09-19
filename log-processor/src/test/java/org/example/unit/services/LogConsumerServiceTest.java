@@ -19,6 +19,7 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @UnitTest
@@ -48,8 +49,17 @@ class LogConsumerServiceTest {
     void givenValidLogRecordJson_whenConsumeLog_thenProcessLogIsCalled() throws Exception {
         // Arrange
         String logJson = "{\"timestamp\":\"2024-09-09T14:00:00Z\",\"level\":\"INFO\",\"message\":\"Test log message\"}";
-        LogRecord logRecord = objectMapper.readValue(logJson, LogRecord.class);
+        LogRecord logRecord = LogRecord.builder()
+                .timestamp("2024-09-09T14:00:00Z")
+                .level(LogRecord.LogLevel.INFO)
+                .message("Test log message")
+                .build();
         ConsumerRecord<String, String> consumerRecord = new ConsumerRecord<>("logs", 0, 0L, "key", logJson);
+
+        // Debug: Deserialize and validate directly to check
+        LogRecord deserializedLogRecord = objectMapper.readValue(logJson, LogRecord.class);
+        assertThat(deserializedLogRecord).isNotNull();
+        assertThat(validator.validate(deserializedLogRecord)).isEmpty(); // Ensure no validation errors
 
         // Act
         logConsumerService.consumeLog(consumerRecord);

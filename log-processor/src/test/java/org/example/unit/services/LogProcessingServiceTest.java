@@ -45,13 +45,20 @@ class LogProcessingServiceTest {
     @Test
     void givenValidLogRecord_whenProcessLog_thenLogIsProcessedAndSaved() {
         // Arrange
-        LogRecord logRecord = new LogRecord(
-                "2024-09-09T14:00:00Z", "INFO", "Test log message",
-                "source", "thread", "logger", "2024-09-09T14:00:00Z",
-                "General", new HashMap<>(), "unprocessed"
-        );
+        LogRecord logRecord = LogRecord.builder()
+                .timestamp("2024-09-09T14:00:00Z")
+                .level(LogRecord.LogLevel.INFO)
+                .message("Test log message")
+                .source("source")
+                .thread("thread")
+                .logger("logger")
+                .processedTimestamp("2024-09-09T14:00:00Z")
+                .category("General")
+                .tags(new HashMap<>())
+                .status("unprocessed")
+                .build();
 
-        CompletableFuture future = CompletableFuture.completedFuture(mock(SendResult.class));
+        CompletableFuture<SendResult<String, LogRecord>> future = CompletableFuture.completedFuture(mock(SendResult.class));
         when(kafkaTemplate.send(any(String.class), any(LogRecord.class))).thenReturn(future);
 
         // Act
@@ -75,11 +82,18 @@ class LogProcessingServiceTest {
     @Test
     void givenLogRecord_whenAnalyzeAndFilter_thenLogIsCorrectlyTransformed() {
         // Arrange
-        LogRecord logRecord = new LogRecord(
-                "2024-09-09T14:00:00Z", "DEBUG", "This is a DEBUG message",
-                "source", "thread", "logger", "2024-09-09T14:00:00Z",
-                "General", new HashMap<>(), "unprocessed"
-        );
+        LogRecord logRecord = LogRecord.builder()
+                .timestamp("2024-09-09T14:00:00Z")
+                .level(LogRecord.LogLevel.DEBUG)
+                .message("This is a DEBUG message")
+                .source("source")
+                .thread("thread")
+                .logger("logger")
+                .processedTimestamp("2024-09-09T14:00:00Z")
+                .category("General")
+                .tags(new HashMap<>())
+                .status("unprocessed")
+                .build();
 
         // Act
         LogRecord processedLog = logProcessingService.analyzeAndFilter(logRecord);
@@ -93,11 +107,18 @@ class LogProcessingServiceTest {
     @Test
     void givenLogRecord_whenSaveProcessedLog_thenEntityIsSavedToDatabase() {
         // Arrange
-        LogRecord processedLog = new LogRecord(
-                "2024-09-09T14:00:00Z", "INFO", "Processed message",
-                "source", "thread", "logger", "2024-09-09T14:00:00Z",
-                "General", Map.of("processed", "true"), "processed"
-        );
+        LogRecord processedLog = LogRecord.builder()
+                .timestamp("2024-09-09T14:00:00Z")
+                .level(LogRecord.LogLevel.INFO)
+                .message("Processed message")
+                .source("source")
+                .thread("thread")
+                .logger("logger")
+                .processedTimestamp("2024-09-09T14:00:00Z")
+                .category("General")
+                .tags(Map.of("processed", "true"))
+                .status("processed")
+                .build();
 
         // Act
         logProcessingService.saveProcessedLog(processedLog);
@@ -115,11 +136,18 @@ class LogProcessingServiceTest {
     @Test
     void givenLogRecord_whenPublishProcessedLog_thenLogIsPublishedToKafka() {
         // Arrange
-        LogRecord processedLog = new LogRecord(
-                "2024-09-09T14:00:00Z", "INFO", "Processed message",
-                "source", "thread", "logger", "2024-09-09T14:00:00Z",
-                "General", Map.of("processed", "true"), "processed"
-        );
+        LogRecord processedLog = LogRecord.builder()
+                .timestamp("2024-09-09T14:00:00Z")
+                .level(LogRecord.LogLevel.INFO)
+                .message("Processed message")
+                .source("source")
+                .thread("thread")
+                .logger("logger")
+                .processedTimestamp("2024-09-09T14:00:00Z")
+                .category("General")
+                .tags(Map.of("processed", "true"))
+                .status("processed")
+                .build();
 
         CompletableFuture<SendResult<String, LogRecord>> future = CompletableFuture.completedFuture(mock(SendResult.class));
         when(kafkaTemplate.send(any(String.class), any(LogRecord.class))).thenReturn(future);
