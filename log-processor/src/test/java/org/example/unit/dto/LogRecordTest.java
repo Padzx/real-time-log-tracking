@@ -29,18 +29,18 @@ class LogRecordTest {
 
     @Test
     void whenAllFieldsAreValid_thenNoViolations() {
-        LogRecord logRecord = new LogRecord(
-                "2024-09-09T14:00:00Z",
-                "INFO",
-                "This is a log message.",
-                "source",
-                "main",
-                "logger",
-                "2024-09-09T14:00:01Z",
-                "category",
-                Map.of("key1", "value1"),
-                "processed"
-        );
+        LogRecord logRecord = LogRecord.builder()
+                .timestamp("2024-09-09T14:00:00.000Z")
+                .level(LogRecord.LogLevel.INFO)
+                .message("This is a log message.")
+                .source("source")
+                .thread("main")
+                .logger("logger")
+                .processedTimestamp("2024-09-09T14:00:01.000Z")
+                .category("category")
+                .tags(Map.of("key1", "value1"))
+                .status("processed")
+                .build();
 
         Set<ConstraintViolation<LogRecord>> violations = validator.validate(logRecord);
         assertThat(violations).isEmpty();
@@ -48,18 +48,18 @@ class LogRecordTest {
 
     @Test
     void whenTimestampIsInvalid_thenViolationOccurs() {
-        LogRecord logRecord = new LogRecord(
-                "invalid-timestamp",
-                "INFO",
-                "This is a log message.",
-                "source",
-                "main",
-                "logger",
-                "2024-09-09T14:00:01Z",
-                "category",
-                Map.of("key1", "value1"),
-                "processed"
-        );
+        LogRecord logRecord = LogRecord.builder()
+                .timestamp("invalid-timestamp")
+                .level(LogRecord.LogLevel.INFO)
+                .message("This is a log message.")
+                .source("source")
+                .thread("main")
+                .logger("logger")
+                .processedTimestamp("2024-09-09T14:00:01.000Z")
+                .category("category")
+                .tags(Map.of("key1", "value1"))
+                .status("processed")
+                .build();
 
         Set<ConstraintViolation<LogRecord>> violations = validator.validate(logRecord);
         assertThat(violations).hasSize(1);
@@ -71,18 +71,18 @@ class LogRecordTest {
 
     @Test
     void whenLevelIsNull_thenViolationOccurs() {
-        LogRecord logRecord = new LogRecord(
-                "2024-09-09T14:00:00Z",
-                null,
-                "This is a log message.",
-                "source",
-                "main",
-                "logger",
-                "2024-09-09T14:00:01Z",
-                "category",
-                Map.of("key1", "value1"),
-                "processed"
-        );
+        LogRecord logRecord = LogRecord.builder()
+                .timestamp("2024-09-09T14:00:00.000Z")
+                .level(null)
+                .message("This is a log message.")
+                .source("source")
+                .thread("main")
+                .logger("logger")
+                .processedTimestamp("2024-09-09T14:00:01.000Z")
+                .category("category")
+                .tags(Map.of("key1", "value1"))
+                .status("processed")
+                .build();
 
         Set<ConstraintViolation<LogRecord>> violations = validator.validate(logRecord);
         assertThat(violations).hasSize(1);
@@ -94,18 +94,18 @@ class LogRecordTest {
 
     @Test
     void whenMessageIsEmpty_thenViolationOccurs() {
-        LogRecord logRecord = new LogRecord(
-                "2024-09-09T14:00:00Z",
-                "INFO",
-                "",
-                "source",
-                "main",
-                "logger",
-                "2024-09-09T14:00:01Z",
-                "category",
-                Map.of("key1", "value1"),
-                "processed"
-        );
+        LogRecord logRecord = LogRecord.builder()
+                .timestamp("2024-09-09T14:00:00.000Z")
+                .level(LogRecord.LogLevel.INFO)
+                .message("")
+                .source("source")
+                .thread("main")
+                .logger("logger")
+                .processedTimestamp("2024-09-09T14:00:01.000Z")
+                .category("category")
+                .tags(Map.of("key1", "value1"))
+                .status("processed")
+                .build();
 
         Set<ConstraintViolation<LogRecord>> violations = validator.validate(logRecord);
         assertThat(violations).hasSize(1);
@@ -117,18 +117,18 @@ class LogRecordTest {
 
     @Test
     void whenProcessedTimestampIsNull_thenNoViolation() {
-        LogRecord logRecord = new LogRecord(
-                "2024-09-09T14:00:00Z",
-                "INFO",
-                "This is a log message.",
-                "source",
-                "main",
-                "logger",
-                null, // Processed timestamp is optional
-                "category",
-                Map.of("key1", "value1"),
-                "processed"
-        );
+        LogRecord logRecord = LogRecord.builder()
+                .timestamp("2024-09-09T14:00:00.000Z")
+                .level(LogRecord.LogLevel.INFO)
+                .message("This is a log message.")
+                .source("source")
+                .thread("main")
+                .logger("logger")
+                .processedTimestamp(null)
+                .category("category")
+                .tags(Map.of("key1", "value1"))
+                .status("processed")
+                .build();
 
         Set<ConstraintViolation<LogRecord>> violations = validator.validate(logRecord);
         assertThat(violations).isEmpty();
