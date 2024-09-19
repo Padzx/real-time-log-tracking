@@ -32,7 +32,7 @@ dependencies {
     implementation("com.h2database:h2:2.2.222")
 
     // Database PostgreSQL for local test and production
-    implementation("org.postgresql:postgresql:42.6.0")
+    implementation("org.postgresql:postgresql:42.7.2")
 
     // Testing dependencies
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
