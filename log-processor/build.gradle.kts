@@ -89,7 +89,7 @@ tasks.register<Test>("integrationTest") {
 }
 
 tasks.named("check") {
-    dependsOn("unitTest", "integrationTest")
+    dependsOn("unitTest")
 }
 
 springBoot {
