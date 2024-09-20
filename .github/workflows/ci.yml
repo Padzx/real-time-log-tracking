@@ -98,7 +98,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build Project - Log Processor
-        run: ./gradlew :log-processor:clean :log-processor:build --warning-mode all
+        run: ./gradlew :log-processor:test --warning-mode all -Dspring.profiles.active=test
         env:
           JAVA_HOME: ${{ needs.setup.outputs.java-home }}
           SPRING_PROFILES_ACTIVE: test
