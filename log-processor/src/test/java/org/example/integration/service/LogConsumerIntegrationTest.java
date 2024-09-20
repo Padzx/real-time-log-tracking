@@ -19,6 +19,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.kafka.test.context.EmbeddedKafka;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Map;
@@ -35,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 @SpringBootTest
 @IntegrationTest
 @Tag("integration")
+@ActiveProfiles("integration-test")
 class LogConsumerIntegrationTest {
 
     private static final String TOPIC = "logs";
