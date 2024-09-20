@@ -101,6 +101,7 @@ jobs:
         run: ./gradlew :log-processor:clean :log-processor:build --warning-mode all
         env:
           JAVA_HOME: ${{ needs.setup.outputs.java-home }}
+          SPRING_PROFILES_ACTIVE: test
 
       - name: Run Unit Tests - Log Processor
         run: ./gradlew :log-processor:unitTest --warning-mode all
