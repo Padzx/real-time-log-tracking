@@ -1,6 +1,5 @@
 package org.example.unit.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.example.annotations.UnitTest;
 import org.example.dto.LogRecord;
@@ -32,34 +31,26 @@ class LogConsumerServiceTest {
     @InjectMocks
     private LogConsumerService logConsumerService;
 
-    private ObjectMapper objectMapper;
     private Validator validator;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        objectMapper = new ObjectMapper();
         try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
             validator = factory.getValidator();
         }
-        logConsumerService = new LogConsumerService(logProcessingService, objectMapper, validator);
+        logConsumerService = new LogConsumerService(logProcessingService, validator);
     }
 
     @Test
-    void givenValidLogRecordJson_whenConsumeLog_thenProcessLogIsCalled() throws Exception {
+    void givenValidLogRecord_whenConsumeLog_thenProcessLogIsCalled() {
         // Arrange
-        String logJson = "{\"timestamp\":\"2024-09-09T14:00:00Z\",\"level\":\"INFO\",\"message\":\"Test log message\"}";
-        LogRecord logRecord = LogRecord.builder()
+        LogRecord validLogRecord = LogRecord.builder()
                 .timestamp("2024-09-09T14:00:00Z")
                 .level(LogRecord.LogLevel.INFO)
                 .message("Test log message")
                 .build();
-        ConsumerRecord<String, String> consumerRecord = new ConsumerRecord<>("logs", 0, 0L, "key", logJson);
-
-        // Debug: Deserialize and validate directly to check
-        LogRecord deserializedLogRecord = objectMapper.readValue(logJson, LogRecord.class);
-        assertThat(deserializedLogRecord).isNotNull();
-        assertThat(validator.validate(deserializedLogRecord)).isEmpty(); // Ensure no validation errors
+        ConsumerRecord<String, LogRecord> consumerRecord = new ConsumerRecord<>("logs", 0, 0L, "key", validLogRecord);
 
         // Act
         logConsumerService.consumeLog(consumerRecord);
@@ -70,16 +61,20 @@ class LogConsumerServiceTest {
         LogRecord capturedLogRecord = logRecordCaptor.getValue();
 
         assertThat(capturedLogRecord).isNotNull();
-        assertThat(capturedLogRecord.getTimestamp()).isEqualTo(logRecord.getTimestamp());
-        assertThat(capturedLogRecord.getLevel()).isEqualTo(logRecord.getLevel());
-        assertThat(capturedLogRecord.getMessage()).isEqualTo(logRecord.getMessage());
+        assertThat(capturedLogRecord.getTimestamp()).isEqualTo(validLogRecord.getTimestamp());
+        assertThat(capturedLogRecord.getLevel()).isEqualTo(validLogRecord.getLevel());
+        assertThat(capturedLogRecord.getMessage()).isEqualTo(validLogRecord.getMessage());
     }
 
     @Test
-    void givenInvalidLogJson_whenConsumeLog_thenProcessLogIsNotCalled() {
+    void givenInvalidLogRecord_whenConsumeLog_thenProcessLogIsNotCalled() {
         // Arrange
-        String invalidJson = "{\"timestamp\":\"invalid-timestamp\",\"level\":\"INFO\",\"message\":\"Test log message\"}";
-        ConsumerRecord<String, String> consumerRecord = new ConsumerRecord<>("logs", 0, 0L, "key", invalidJson);
+        LogRecord invalidLogRecord = LogRecord.builder()
+                .timestamp("invalid-timestamp")
+                .level(LogRecord.LogLevel.INFO)
+                .message("Invalid log message")
+                .build();
+        ConsumerRecord<String, LogRecord> consumerRecord = new ConsumerRecord<>("logs", 0, 0L, "key", invalidLogRecord);
 
         // Act
         logConsumerService.consumeLog(consumerRecord);
@@ -91,8 +86,12 @@ class LogConsumerServiceTest {
     @Test
     void whenExceptionIsThrownDuringProcessing_thenHandleGracefully() {
         // Arrange
-        String logJson = "{\"timestamp\":\"2024-09-09T14:00:00Z\",\"level\":\"INFO\",\"message\":\"Test log message\"}";
-        ConsumerRecord<String, String> consumerRecord = new ConsumerRecord<>("logs", 0, 0L, "key", logJson);
+        LogRecord logRecord = LogRecord.builder()
+                .timestamp("2024-09-09T14:00:00Z")
+                .level(LogRecord.LogLevel.INFO)
+                .message("Test log message")
+                .build();
+        ConsumerRecord<String, LogRecord> consumerRecord = new ConsumerRecord<>("logs", 0, 0L, "key", logRecord);
 
         doThrow(new RuntimeException("Processing error")).when(logProcessingService).processLog(any());
 
