@@ -1,4 +1,4 @@
-package org.example.annotations.controller;
+package org.example.controller;
 
 import org.example.dto.LogRecord;
 import org.example.service.LogProcessingService;
@@ -6,6 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+// This class was used to directly test the operation of the Log Processor microservice.
+// A simple and practical way to test the independence of the microservice in relation to other services.
 
 @RestController
 @RequestMapping("/logs")
