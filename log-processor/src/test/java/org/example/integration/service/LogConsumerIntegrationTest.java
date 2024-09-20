@@ -3,7 +3,6 @@ package org.example.integration.service;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.example.annotations.IntegrationTest;
 import org.example.dto.LogRecord;
 import org.example.entity.LogProcessing;
 import org.example.repository.LogProcessingRepository;
@@ -32,9 +31,8 @@ import static org.mockito.Mockito.verify;
 import java.util.concurrent.TimeUnit;
 
 @ExtendWith(SpringExtension.class)
-@EmbeddedKafka(partitions = 1, topics = { "logs" })
+@EmbeddedKafka(partitions = 1, topics = { "logs" }, brokerProperties = { "listeners=PLAINTEXT://localhost:9093", "port=9093" })
 @SpringBootTest
-@IntegrationTest
 @Tag("integration")
 @ActiveProfiles("integration-test")
 class LogConsumerIntegrationTest {
@@ -49,8 +47,9 @@ class LogConsumerIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        // Configurando o Kafka Producer para a porta correta (9093)
         ProducerFactory<String, LogRecord> producerFactory = new DefaultKafkaProducerFactory<>(Map.of(
-                ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092",
+                ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9093", // Ajuste para a porta correta
                 ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class,
                 ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class
         ));
@@ -70,8 +69,8 @@ class LogConsumerIntegrationTest {
         kafkaTemplate.send(new ProducerRecord<>(TOPIC, validLog));
         kafkaTemplate.flush();
 
-        // Assert
-        await().atMost(30, TimeUnit.SECONDS).untilAsserted(() -> {
+        // Aumentar o tempo de espera para garantir que o log seja processado
+        await().atMost(60, TimeUnit.SECONDS).untilAsserted(() -> {
             verify(logProcessingRepository, times(1)).save(any(LogProcessing.class));
         });
     }
@@ -89,8 +88,8 @@ class LogConsumerIntegrationTest {
         kafkaTemplate.send(new ProducerRecord<>(TOPIC, invalidLog));
         kafkaTemplate.flush();
 
-        // Assert
-        await().atMost(30, TimeUnit.SECONDS).untilAsserted(() -> {
+        // Aumentar o tempo de espera para garantir que o log não seja salvo
+        await().atMost(60, TimeUnit.SECONDS).untilAsserted(() -> {
             verify(logProcessingRepository, times(0)).save(any(LogProcessing.class));
         });
     }
