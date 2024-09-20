@@ -1,6 +1,5 @@
 package org.example.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.example.dto.LogRecord;
 import org.slf4j.Logger;
@@ -13,27 +12,23 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import java.util.Set;
 
-
 @Service
 public class LogConsumerService {
 
     private static final Logger logger = LoggerFactory.getLogger(LogConsumerService.class);
     private final LogProcessingService logProcessingService;
-    private final ObjectMapper objectMapper;
     private final Validator validator;
 
-    public LogConsumerService(LogProcessingService logProcessingService, ObjectMapper objectMapper, Validator validator) {
+    public LogConsumerService(LogProcessingService logProcessingService, Validator validator) {
         this.logProcessingService = logProcessingService;
-        this.objectMapper = objectMapper;
         this.validator = validator;
     }
 
     @KafkaListener(topics = "logs", groupId = "log-processor-group")
-    public void consumeLog(ConsumerRecord<String, String> record) {
+    public void consumeLog(ConsumerRecord<String, LogRecord> record) {
         try {
-            logger.info("Consumed log: {}", record.value());
-
-            LogRecord logRecord = objectMapper.readValue(record.value(), LogRecord.class);
+            LogRecord logRecord = record.value(); // Agora recebemos o LogRecord diretamente
+            logger.info("Consumed log: {}", logRecord);
 
             validateLogRecord(logRecord);
 
@@ -41,11 +36,11 @@ public class LogConsumerService {
 
         } catch (ConstraintViolationException e) {
             logger.error("Validation failed for log: {}", record.value(), e);
-            // Additional logic for invalid logs, such as sending to an error thread
+            // Lógica adicional para logs inválidos, como envio para um tópico de erro
 
         } catch (Exception e) {
             logger.error("Failed to process log: {}", record.value(), e);
-            // Additional logic to handle failures, such as retry or fallback
+            // Lógica adicional para lidar com falhas, como retry ou fallback
         }
     }
 
