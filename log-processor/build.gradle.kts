@@ -54,7 +54,9 @@ dependencies {
 }
 
 tasks.test {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        excludeTags("integration")
+    }
     testLogging {
         events("passed", "skipped", "failed")
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
@@ -66,7 +68,7 @@ tasks.register<Test>("unitTest") {
     description = "Runs only unit tests."
     group = "verification"
     useJUnitPlatform {
-        includeTags("unit") // Tag unit tests with @Tag("unit")
+        includeTags("unit") // Tag unit tests com @Tag("unit")
     }
     testLogging {
         events("passed", "skipped", "failed")
@@ -79,7 +81,7 @@ tasks.register<Test>("integrationTest") {
     description = "Runs only integration tests."
     group = "verification"
     useJUnitPlatform {
-        includeTags("integration") // Tag integration tests with @Tag("integration")
+        includeTags("integration") // Tag integration tests com @Tag("integration")
     }
     testLogging {
         events("passed", "skipped", "failed")
