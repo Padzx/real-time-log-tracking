@@ -3,6 +3,7 @@ package org.example.integration.service;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.example.annotations.IntegrationTest;
 import org.example.dto.LogRecord;
 import org.example.entity.LogProcessing;
 import org.example.repository.LogProcessingRepository;
@@ -32,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 @ExtendWith(SpringExtension.class)
 @EmbeddedKafka(partitions = 1, topics = { "logs" })
 @SpringBootTest
+@IntegrationTest
 @Tag("integration")
 class LogConsumerIntegrationTest {
 
