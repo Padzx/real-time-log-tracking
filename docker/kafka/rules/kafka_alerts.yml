@@ -1,3 +1,4 @@
+# - Kafka Alerts for Prometheus
 groups:
   - name: kafka_alerts
     rules:
