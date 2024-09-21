@@ -24,7 +24,7 @@ services:
   kafka:
     image: confluentinc/cp-kafka:7.5.0
     container_name: kafka
-    user: "root"
+    user: "root" # To avoid the lack of user permission (not a recommended practice but effective in test cases)
     ports:
       - "9092:9092"
       - "7071:7071"
