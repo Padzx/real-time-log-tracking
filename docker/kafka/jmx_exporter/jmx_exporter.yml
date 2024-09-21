@@ -1,0 +1,129 @@
+---
+startDelaySeconds: 0
+ssl: false
+lowercaseOutputName: true
+lowercaseOutputLabelNames: true
+
+rules:
+  # Kafka Broker Metrics
+  - pattern: kafka.server<type=(BrokerTopicMetrics), name=(MessagesInPerSec|BytesInPerSec|BytesOutPerSec)><>Count
+    name: kafka_server_broker_topic_metrics_$2_total
+    labels:
+      type: "$1"
+    help: "Kafka broker topic metrics ($2)"
+    type: COUNTER
+
+  - pattern: kafka.server<type=(BrokerTopicMetrics), name=(FailedFetchRequestsPerSec|FailedProduceRequestsPerSec)><>Count
+    name: kafka_server_broker_topic_metrics_failed_$2_requests_total
+    labels:
+      type: "$1"
+    help: "Kafka broker failed $2 requests"
+    type: COUNTER
+
+  - pattern: kafka.network<type=RequestMetrics, name=(RequestsPerSec), request=(Produce|FetchConsumer|FetchFollower)><>Count
+    name: kafka_network_request_metrics_$3_requests_total
+    labels:
+      request: "$3"
+    help: "Kafka network request metrics ($3)"
+    type: COUNTER
+
+  - pattern: kafka.network<type=RequestMetrics, name=RequestsPerSec, request=(.*)><>Count
+    name: kafka_network_request_total
+    labels:
+      request_type: "$1"
+    help: "Kafka network total requests per second by request type"
+    type: COUNTER
+
+  - pattern: kafka.server<type=ReplicaManager, name=(UnderReplicatedPartitions)><>Value
+    name: kafka_server_replica_manager_under_replicated_partitions
+    help: "Kafka under replicated partitions"
+    type: GAUGE
+
+  - pattern: kafka.server<type=ReplicaManager, name=(IsrShrinksPerSec|IsrExpandsPerSec)><>Count
+    name: kafka_server_replica_manager_isr_$1_total
+    help: "Kafka ISR $1 per second"
+    type: COUNTER
+
+  # JVM Metrics
+  - pattern: java.lang<type=GarbageCollector, name=(.*)><>CollectionTime
+    name: jvm_gc_collection_time_seconds
+    labels:
+      gc: "$1"
+    help: "Time spent in a given JVM garbage collector in seconds"
+    type: COUNTER
+
+  - pattern: java.lang<type=GarbageCollector, name=(.*)><>CollectionCount
+    name: jvm_gc_collection_count_total
+    labels:
+      gc: "$1"
+    help: "Number of JVM garbage collector collections"
+    type: COUNTER
+
+  - pattern: java.lang<type=Memory, name=HeapMemoryUsage><>used
+    name: jvm_memory_bytes_used
+    labels:
+      area: "heap"
+    help: "JVM heap memory used"
+    type: GAUGE
+
+  - pattern: java.lang<type=Memory, name=NonHeapMemoryUsage><>used
+    name: jvm_memory_bytes_used
+    labels:
+      area: "nonheap"
+    help: "JVM non-heap memory used"
+    type: GAUGE
+
+  - pattern: java.lang<type=Memory, name=HeapMemoryUsage><>max
+    name: jvm_memory_bytes_max
+    labels:
+      area: "heap"
+    help: "JVM heap memory max"
+    type: GAUGE
+
+  - pattern: java.lang<type=OperatingSystem, name=SystemCpuLoad><>Value
+    name: jvm_os_system_cpu_load
+    help: "System CPU load"
+    type: GAUGE
+
+  - pattern: java.lang<type=OperatingSystem, name=ProcessCpuLoad><>Value
+    name: jvm_os_process_cpu_load
+    help: "Process CPU load"
+    type: GAUGE
+
+  # Kafka Consumer Metrics
+  - pattern: kafka.consumer<type=consumer-fetch-manager-metrics, client-id=(.*), topic=(.*)><>records-lag-max
+    name: kafka_consumer_fetch_manager_records_lag_max
+    labels:
+      client_id: "$1"
+      topic: "$2"
+    help: "Maximum lag of records for a consumer client"
+    type: GAUGE
+
+  - pattern: kafka.consumer<type=consumer-fetch-manager-metrics, client-id=(.*)><>fetch-rate
+    name: kafka_consumer_fetch_manager_fetch_rate
+    labels:
+      client_id: "$1"
+    help: "Fetch rate of a consumer client"
+    type: GAUGE
+
+  - pattern: kafka.consumer<type=consumer-fetch-manager-metrics, client-id=(.*)><>fetch-latency-avg
+    name: kafka_consumer_fetch_manager_fetch_latency_avg
+    labels:
+      client_id: "$1"
+    help: "Average fetch latency of a consumer client"
+    type: GAUGE
+
+  # Kafka Producer Metrics
+  - pattern: kafka.producer<type=producer-metrics, client-id=(.*)><>record-send-rate
+    name: kafka_producer_metrics_record_send_rate
+    labels:
+      client_id: "$1"
+    help: "Record send rate for a producer client"
+    type: GAUGE
+
+  - pattern: kafka.producer<type=producer-metrics, client-id=(.*)><>record-error-rate
+    name: kafka_producer_metrics_record_error_rate
+    labels:
+      client_id: "$1"
+    help: "Record error rate for a producer client"
+    type: GAUGE

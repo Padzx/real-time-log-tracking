@@ -1,0 +1,38 @@
+groups:
+  - name: zookeeper_alerts
+    rules:
+      - alert: ZookeeperDown
+        expr: up{job="zookeeper"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Zookeeper is down"
+          description: "The Zookeeper instance ({{ $labels.instance }}) is down for more than 2 minutes."
+
+      - alert: ZookeeperHeapMemoryUsageHigh
+        expr: jvm_memory_bytes_used{job="zookeeper", area="heap"} / jvm_memory_bytes_max{job="zookeeper", area="heap"} > 0.75
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High heap memory usage in Zookeeper"
+          description: "The Zookeeper instance ({{ $labels.instance }}) is using more than 75% of the available heap memory for more than 5 minutes."
+
+      - alert: ZookeeperTooManyConnections
+        expr: zookeeper_connections > 50
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Too many client connections to Zookeeper"
+          description: "The Zookeeper instance ({{ $labels.instance }}) has more than 50 client connections."
+
+      - alert: ZookeeperOutstandingRequestsHigh
+        expr: zookeeper_outstanding_requests > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High outstanding requests in Zookeeper"
+          description: "The Zookeeper instance ({{ $labels.instance }}) has more than 10 outstanding requests for more than 5 minutes."

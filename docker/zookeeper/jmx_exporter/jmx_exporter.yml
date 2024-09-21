@@ -1,0 +1,99 @@
+---
+startDelaySeconds: 0
+hostPort: 0.0.0.0:7000
+lowercaseOutputName: true
+lowercaseOutputLabelNames: true
+
+rules:
+  # JVM memory usage (heap and non-heap)
+  - pattern: java.lang<type=Memory><>HeapMemoryUsage
+    name: jvm_memory_heap_usage_bytes
+    help: "JVM heap memory usage"
+    labels:
+      type: "heap"
+    type: GAUGE
+
+  - pattern: java.lang<type=Memory><>NonHeapMemoryUsage
+    name: jvm_memory_nonheap_usage_bytes
+    help: "JVM non-heap memory usage"
+    labels:
+      type: "nonheap"
+    type: GAUGE
+
+  # JVM garbage collection metrics
+  - pattern: java.lang<type=GarbageCollector, name=(.*)><>CollectionTime
+    name: jvm_gc_collection_time_seconds
+    help: "JVM GC collection time"
+    labels:
+      gc: "$1"
+    type: COUNTER
+
+  - pattern: java.lang<type=GarbageCollector, name=(.*)><>CollectionCount
+    name: jvm_gc_collection_count_total
+    help: "JVM GC collection count"
+    labels:
+      gc: "$1"
+    type: COUNTER
+
+  # JVM CPU load
+  - pattern: java.lang<type=OperatingSystem><>ProcessCpuLoad
+    name: jvm_process_cpu_load
+    help: "JVM process CPU load"
+    type: GAUGE
+
+  - pattern: java.lang<type=OperatingSystem><>SystemCpuLoad
+    name: jvm_system_cpu_load
+    help: "System CPU load"
+    type: GAUGE
+
+  # Zookeeper metrics: number of client connections
+  - pattern: org.apache.ZooKeeperService<name0=Connections><>numAliveConnections
+    name: zookeeper_num_alive_connections
+    help: "Number of active Zookeeper client connections"
+    type: GAUGE
+
+  # Zookeeper metrics: number of outstanding requests
+  - pattern: org.apache.ZooKeeperService<name0=InMemoryDataTree><>outstandingRequests
+    name: zookeeper_outstanding_requests
+    help: "Number of outstanding requests in Zookeeper"
+    type: GAUGE
+
+  # Zookeeper metrics: latency of requests
+  - pattern: org.apache.ZooKeeperService<name0=Server><>maxLatency
+    name: zookeeper_server_max_latency_milliseconds
+    help: "Max latency for requests to Zookeeper"
+    type: GAUGE
+
+  - pattern: org.apache.ZooKeeperService<name0=Server><>avgLatency
+    name: zookeeper_server_avg_latency_milliseconds
+    help: "Average latency for requests to Zookeeper"
+    type: GAUGE
+
+  - pattern: org.apache.ZooKeeperService<name0=Server><>minLatency
+    name: zookeeper_server_min_latency_milliseconds
+    help: "Min latency for requests to Zookeeper"
+    type: GAUGE
+
+  # Zookeeper metrics: server state (leader, follower, etc.)
+  - pattern: org.apache.ZooKeeperService<name0=Server><>state
+    name: zookeeper_server_state
+    help: "Zookeeper server state (leader, follower, etc.)"
+    type: GAUGE
+
+  # Zookeeper metrics: follower sync duration (only for leaders)
+  - pattern: org.apache.ZooKeeperService<name0=Leader><>syncTime
+    name: zookeeper_follower_sync_time_milliseconds
+    help: "Zookeeper follower sync time duration"
+    type: GAUGE
+
+  # Zookeeper metrics: election metrics
+  - pattern: org.apache.ZooKeeperService<name0=LeaderElection><>electionTimeTaken
+    name: zookeeper_leader_election_time_milliseconds
+    help: "Time taken for Zookeeper leader elections"
+    type: GAUGE
+
+  # Zookeeper metrics: number of queued requests
+  - pattern: org.apache.ZooKeeperService<name0=Server><>zabOutstanding
+    name: zookeeper_zab_outstanding
+    help: "Number of outstanding ZAB requests in Zookeeper"
+    type: GAUGE
