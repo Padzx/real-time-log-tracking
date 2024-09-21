@@ -97,7 +97,3 @@ Thumbs.db
 # Exclude test reports (HTML, XML, etc.)
 test-results/
 reports/
-
-# Other files
-java_pid14077.hprof
-java_pid9854.hprof
