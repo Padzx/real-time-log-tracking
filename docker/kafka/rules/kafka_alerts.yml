@@ -1,0 +1,39 @@
+# - Kafka Alerts for Prometheus
+groups:
+  - name: kafka_alerts
+    rules:
+      - alert: KafkaBrokerDown
+        expr: up{job="kafka"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Kafka Broker is down"
+          description: "The Kafka broker ({{ $labels.instance }}) has been down for more than 2 minutes."
+
+      - alert: KafkaUnderReplicatedPartitions
+        expr: kafka_cluster_partition_under_replicated_partition > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Under-replicated Kafka partitions"
+          description: "The number of under-replicated partitions in Kafka broker ({{ $labels.instance }}) is greater than zero for more than 5 minutes."
+
+      - alert: KafkaHeapMemoryUsage
+        expr: jvm_memory_bytes_used{job="kafka", area="heap"} / jvm_memory_bytes_max{job="kafka", area="heap"} > 0.75
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High heap memory usage in Kafka"
+          description: "Kafka heap memory usage ({{ $labels.instance }}) has been above 75% for more than 5 minutes."
+
+      - alert: KafkaConsumerLag
+        expr: kafka_consumer_lag > 500
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Kafka consumer lag"
+          description: "Kafka consumer lag ({{ $labels.instance }}) is above 500 messages for more than 10 minutes."

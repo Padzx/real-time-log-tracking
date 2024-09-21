@@ -1,0 +1,127 @@
+services:
+  zookeeper:
+    image: zookeeper:3.8.4
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+      - "8090:8090"
+      - "7000:7000"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_OPTS: "-Dlog4j.configuration=file:/conf/log4j.properties -javaagent:/opt/jmx_prometheus_javaagent.jar=7000:/etc/jmx_exporter.yml"
+    volumes:
+      - ./zookeeper/config/zoo.cfg:/conf/zoo.cfg
+      - ./zookeeper/jmx_exporter/jmx_exporter.yml:/etc/jmx_exporter.yml
+      - ./zookeeper/jmx_prometheus/jmx_prometheus_javaagent-1.0.1.jar:/opt/jmx_prometheus_javaagent.jar
+      - ./zookeeper/properties/log4j.properties:/conf/log4j.properties
+      - ./zookeeper/data:/var/lib/zookeeper/data
+      - ./zookeeper/log:/var/lib/zookeeper/log
+    networks:
+      - docker_kafka_net
+    restart: unless-stopped
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka
+    user: "root" # To avoid the lack of user permission (not a recommended practice but effective in test cases)
+    ports:
+      - "9092:9092"
+      - "7071:7071"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_OPTS: "-Dlog4j.configuration=file:/etc/kafka/log4j.properties -javaagent:/opt/jmx_prometheus_javaagent.jar=7071:/etc/jmx_exporter.yml"
+    volumes:
+      - ./kafka/jmx_prometheus/jmx_prometheus_javaagent-1.0.1.jar:/opt/jmx_prometheus_javaagent.jar
+      - ./kafka/properties/server.properties:/etc/kafka/server.properties
+      - ./kafka/properties/log4j.properties:/etc/kafka/log4j.properties
+      - ./kafka/jmx_exporter/jmx_exporter.yml:/etc/jmx_exporter.yml
+      - ./kafka/data:/var/lib/kafka/data
+    networks:
+      - docker_kafka_net
+    depends_on:
+      - zookeeper
+    restart: unless-stopped
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.5.0
+    container_name: logstash
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
+      - /var/log:/var/log
+    ports:
+      - "5044:5044"
+      - "9600:9600"
+    networks:
+      - docker_kafka_net
+    depends_on:
+      - kafka
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    user: "postgres"
+    environment:
+      POSTGRES_DB: logdb
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - docker_kafka_net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./kafka/rules/kafka_alerts.yml:/etc/prometheus/rules/kafka_alerts.yml
+      - ./zookeeper/rules/zookeeper_alerts.yml:/etc/prometheus/rules/zookeeper_alerts.yml
+    networks:
+      - docker_kafka_net
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:10.1.1
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - ./prometheus/dashboards:/etc/grafana/provisioning/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_USER=admin
+    networks:
+      - docker_kafka_net
+    restart: unless-stopped
+
+volumes:
+  grafana-storage:
+    driver: local
+  postgres-data:
+    driver: local
+
+networks:
+  docker_kafka_net:
+    driver: bridge
