@@ -1,4 +1,4 @@
--- TABLE: processed_logs
+-- table: processed_logs
 
 CREATE TABLE processed_logs (
                                 id BIGSERIAL PRIMARY KEY,
