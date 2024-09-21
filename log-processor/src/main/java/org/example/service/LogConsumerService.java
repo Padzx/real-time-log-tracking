@@ -27,7 +27,7 @@ public class LogConsumerService {
     @KafkaListener(topics = "logs", groupId = "log-processor-group")
     public void consumeLog(ConsumerRecord<String, LogRecord> record) {
         try {
-            LogRecord logRecord = record.value(); // Agora recebemos o LogRecord diretamente
+            LogRecord logRecord = record.value();
             logger.info("Consumed log: {}", logRecord);
 
             validateLogRecord(logRecord);
@@ -36,11 +36,11 @@ public class LogConsumerService {
 
         } catch (ConstraintViolationException e) {
             logger.error("Validation failed for log: {}", record.value(), e);
-            // Lógica adicional para logs inválidos, como envio para um tópico de erro
+
 
         } catch (Exception e) {
             logger.error("Failed to process log: {}", record.value(), e);
-            // Lógica adicional para lidar com falhas, como retry ou fallback
+            // Additional logic to handle failures, such as retry or fallback
         }
     }
 
