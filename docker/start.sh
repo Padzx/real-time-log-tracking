@@ -1,4 +1,6 @@
 #!/bin/bash
+# sh script required for docker compose startup
+# with required kafka and zookeeper directories
 
 ZOOKEEPER_DATA_DIR="./zookeeper/data"
 ZOOKEEPER_LOG_DIR="./zookeeper/data/log"
