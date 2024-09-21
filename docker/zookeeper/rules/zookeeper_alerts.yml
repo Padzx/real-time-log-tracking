@@ -1,3 +1,4 @@
+# - Zookeeper Alerts for Prometheus
 groups:
   - name: zookeeper_alerts
     rules:
