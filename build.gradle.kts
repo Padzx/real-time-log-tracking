@@ -37,7 +37,7 @@ subprojects {
         implementation("com.h2database:h2:2.2.222")
         implementation("org.apache.commons:commons-compress:1.27.1")
 
-        testImplementation(platform("org.junit:junit-bom:5.10.0"))
+        testImplementation(platform("org.junit:junit-bom:5.11.0"))
         testImplementation("org.junit.jupiter:junit-jupiter")
         testImplementation("org.springframework.boot:spring-boot-starter-test") {
             exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
