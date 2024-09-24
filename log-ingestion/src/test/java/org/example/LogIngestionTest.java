@@ -1,4 +1,4 @@
-package org.example.unit;
+package org.example;
 
 import org.example.annotations.UnitTest;
 import org.example.controller.LogController;
