@@ -34,7 +34,7 @@ jobs:
           echo "JAVA_HOME is set to: $JAVA_HOME"
       - name: Cache Gradle dependencies
         id: cache-gradle
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
