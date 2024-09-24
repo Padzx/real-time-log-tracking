@@ -25,7 +25,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")
     implementation("com.h2database:h2:2.2.222")
     implementation("org.apache.commons:commons-compress:1.27.1")
-    implementation("org.springframework.kafka:spring-kafka:3.2.3")
+    implementation("org.springframework.kafka:spring-kafka:3.2.4")
 
     // Test dependencies
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
@@ -34,7 +34,7 @@ dependencies {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
     testImplementation("org.assertj:assertj-core:3.24.2")
-    testImplementation("org.springframework.kafka:spring-kafka-test:3.2.3")
+    testImplementation("org.springframework.kafka:spring-kafka-test:3.2.4")
 
     // Testcontainers dependencies
     testImplementation("org.testcontainers:junit-jupiter:1.19.7")
