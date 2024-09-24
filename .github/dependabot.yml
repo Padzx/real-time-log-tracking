@@ -36,6 +36,24 @@ updates:
       - "Padzx"
     reviewers: []
 
+  - package-ecosystem: "gradle"
+    directory: "/log-processor"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "04:00"
+      timezone: "Etc/UTC"
+    commit-message:
+      prefix: "chore"
+      include: scope
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "security"
+    assignees:
+      - "Padzx"
+    reviewers: []
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
