@@ -16,7 +16,6 @@ updates:
       - "security"
     assignees:
       - "Padzx"
-    reviewers: []
 
   - package-ecosystem: "gradle"
     directory: "/log-ingestion"
@@ -34,7 +33,6 @@ updates:
       - "security"
     assignees:
       - "Padzx"
-    reviewers: []
 
   - package-ecosystem: "gradle"
     directory: "/log-processor"
@@ -52,7 +50,6 @@ updates:
       - "security"
     assignees:
       - "Padzx"
-    reviewers: []
 
   - package-ecosystem: "github-actions"
     directory: "/"
