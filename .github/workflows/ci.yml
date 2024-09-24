@@ -19,7 +19,7 @@ jobs:
       java-home: ${{ steps.set-up-jdk.outputs.java-home }}
     steps:
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
         id: set-up-jdk
@@ -46,7 +46,7 @@ jobs:
     if: contains(github.event.head_commit.message, 'log-ingestion') || github.ref == 'refs/heads/feature/log-ingestion-microservice'
     steps:
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17 for Gradle
         uses: actions/setup-java@v3
@@ -82,7 +82,7 @@ jobs:
     if: contains(github.event.head_commit.message, 'log-processor') || github.ref == 'refs/heads/feature/log-processor-microservice'
     steps:
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17 for Gradle
         uses: actions/setup-java@v3
