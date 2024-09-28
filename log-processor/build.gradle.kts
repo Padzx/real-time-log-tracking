@@ -25,7 +25,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")
     implementation("org.springframework.kafka:spring-kafka:3.2.3")
     implementation("org.apache.commons:commons-compress:1.27.1")
-    implementation("org.hibernate.validator:hibernate-validator:8.0.0.Final")
+    implementation("org.hibernate.validator:hibernate-validator:8.0.1.Final")
     implementation("org.glassfish:jakarta.el:4.0.2")
 
     // Database H2 for local testing
