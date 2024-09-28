@@ -44,7 +44,7 @@ dependencies {
     testImplementation("org.springframework.kafka:spring-kafka-test:3.2.3")
 
     // Mockito for mocking
-    testImplementation("org.mockito:mockito-core:5.13.0")
+    testImplementation("org.mockito:mockito-core:5.14.0")
     testImplementation("org.mockito:mockito-junit-jupiter:5.4.0")
 
     // Testcontainers for integration tests
