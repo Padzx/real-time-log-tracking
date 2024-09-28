@@ -34,7 +34,7 @@ subprojects {
 
 
         implementation("org.springframework.kafka:spring-kafka:3.2.7")
-        implementation("com.h2database:h2:2.2.222")
+        implementation("com.h2database:h2:2.3.232")
         implementation("org.apache.commons:commons-compress:1.27.1")
 
         testImplementation(platform("org.junit:junit-bom:5.10.0"))

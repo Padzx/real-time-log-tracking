@@ -29,7 +29,7 @@ dependencies {
     implementation("org.glassfish:jakarta.el:4.0.2")
 
     // Database H2 for local testing
-    implementation("com.h2database:h2:2.2.222")
+    implementation("com.h2database:h2:2.3.232")
 
     // Database PostgreSQL for local test and production
     implementation("org.postgresql:postgresql:42.7.4")
