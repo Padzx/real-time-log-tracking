@@ -9,8 +9,6 @@
 5. [How to Run](#how-to-run)
 
 
-
-
 ## Introduction
 
 This project aims to build a robust and scalable system for real time log ingestion, processing, and monitoring. Designed for large-scale production environments, the system emphasizes resilience, scalability, and automation. Using modern technologies such as Apache Kafka and Spring Boot, the platform ensures efficient log processing, secure storage, and real-time monitoring, and is easy to extend and deploy.
@@ -85,7 +83,6 @@ Used to create dashboards and graphical visualizations of metrics collected by P
 - Exposed on port 3000 for access to the dashboard interface.
 - Includes automatic provisioning of dashboards configured for Kafka and Zookeeper monitoring.
 
-
 ## Microservices
 
 ### Log Ingestion
@@ -110,8 +107,6 @@ Database:
 
 Stores processed logs in PostgreSQL, ensuring that data is organized and indexed to facilitate future queries.
 It supports both real-time processing (streaming) and batch processing, according to operational needs.
-
-
 
 ## Monitoring
 
