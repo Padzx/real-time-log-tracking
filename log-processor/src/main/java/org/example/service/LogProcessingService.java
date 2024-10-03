@@ -5,6 +5,7 @@ import org.example.entity.LogProcessing;
 import org.example.repository.LogProcessingRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ public class LogProcessingService {
 
     private static final Logger logger = LoggerFactory.getLogger(LogProcessingService.class);
     private static final String PROCESSED_LOGS_TOPIC = "processed-logs";
+    private static final String LOGS_TOPIC = "logs";  // Source topic for ingestion
 
     private final KafkaTemplate<String, LogRecord> kafkaTemplate;
     private final LogProcessingRepository logProcessingRepository;
@@ -28,19 +30,22 @@ public class LogProcessingService {
         this.logProcessingRepository = logProcessingRepository;
     }
 
+    @KafkaListener(topics = LOGS_TOPIC, groupId = "log-processor-group")
+    public void consumeLog(LogRecord logRecord) {
+        logger.info("Consuming log from '{}' topic: {}", LOGS_TOPIC, logRecord);
+        processLog(logRecord);
+    }
+
     public void processLog(LogRecord logRecord) {
-        // Analyze, filter, and transform the log
+
         LogRecord processedLog = analyzeAndFilter(logRecord);
 
-        // Persist the processed log in PostgreSQL
         saveProcessedLog(processedLog);
 
-        // Publish the processed log back to Kafka
         publishProcessedLog(processedLog);
     }
 
     public LogRecord analyzeAndFilter(LogRecord logRecord) {
-
         String processedMessage = logRecord.getMessage().replaceAll("DEBUG", "INFO");
         Map<String, String> tags = new HashMap<>(logRecord.getTags() != null ? logRecord.getTags() : new HashMap<>());
         tags.put("processed", "true");
@@ -92,7 +97,7 @@ public class LogProcessingService {
         CompletableFuture<SendResult<String, LogRecord>> future = kafkaTemplate.send(PROCESSED_LOGS_TOPIC, processedLog);
 
         future.thenAccept(result ->
-                logger.info("Successfully published processed log to Kafka: {}", processedLog)
+                logger.info("Successfully published processed log to '{}' topic: {}", PROCESSED_LOGS_TOPIC, processedLog)
         ).exceptionally(ex -> {
             logger.error("Failed to publish processed log to Kafka: {}", processedLog, ex);
             return null;
