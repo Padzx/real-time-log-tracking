@@ -1,5 +1,3 @@
-# Prometheus
-
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
@@ -12,7 +10,7 @@ scrape_configs:
   # Scrape Kafka metrics
   - job_name: 'kafka'
     static_configs:
-      - targets: ['kafka:7071']
+      - targets: ['kafka:7072']
     metrics_path: '/metrics'
     scrape_interval: 15s
 

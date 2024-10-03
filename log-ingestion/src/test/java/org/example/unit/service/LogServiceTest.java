@@ -7,23 +7,54 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 
+import java.util.concurrent.CompletableFuture;
+
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @UnitTest
 @Tag("unit")
-@SpringBootTest
 class LogServiceTest {
 
     @InjectMocks
     private LogService logService;
 
+    @Mock
+    private KafkaTemplate<String, LogRecord> kafkaTemplate; // Mocks the KafkaTemplate
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this); // Initialize the mocks
+    }
+
+    @Test
+    void testProcessLog_ValidLog() {
+        LogRecord validLog = new LogRecord(
+                "2024-08-28T12:34:56Z",
+                "INFO",
+                "This is a valid log message",
+                "TestSource",
+                "main",
+                "TestLogger"
+        );
+
+        CompletableFuture<SendResult<String, LogRecord>> future = new CompletableFuture<>();
+        when(kafkaTemplate.send(anyString(), any(LogRecord.class))).thenReturn(future);
+
+        logService.processLog(validLog);
+
+        future.complete(new SendResult<>(null, null));
+
+        verify(kafkaTemplate).send("logs", validLog);
     }
 
     @Test

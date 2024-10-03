@@ -188,37 +188,21 @@ To be running locally and interacting with the services:
 
 ``./gradlew bootRun`` for run application.
 
-You can be interacting with the endpoints of each microservice (but the idea is that each microservice has its correct function), using Postman or an API testing tool of your choice.
+You can be interacting with de application sending an example log for endpoint of Log Ingestion:
 
-Interacting the **Log Processor** Microservice:
+Interacting with the Application:
 
 ```
-POST http://localhost:8082/logs
+POST http://localhost:8080/api/logs/json
 Content-Type: application/json
 
 {
-  "timestamp": "2024-09-19T10:00:00Z",
+  "timestamp": "2024-10-01T15:30:00Z",
   "level": "INFO",
-  "message": "This is a test log",
-  "source": "my-app",
-  "thread": "main",
-  "logger": "com.example.MyApp",
-  "tags": {"env": "dev", "service": "log-service"}
-}
-```
-To interact with the **Log Ingestion** microservice:
-
-```
-POST http://localhost:8080/api/logs
-Content-Type: application/json
-
-{
-    "timestamp": "2024-08-28T12:34:56Z",
-    "level": "INFO",
-    "message": "This is a test log message",
-    "source": "TestSource",
-    "thread": "main",
-    "logger": "TestLogger"
+  "message": "Log message example",
+  "source": "my-application",
+  "thread": "main-thread",
+  "logger": "com.example.MyClass"
 }
 ```
 
