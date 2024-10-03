@@ -19,10 +19,10 @@ public class LogService {
     private static final Logger logger = LoggerFactory.getLogger(LogService.class);
     private static final String KAFKA_TOPIC = "logs";
 
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, LogRecord> kafkaTemplate;
 
     @Autowired
-    public LogService(KafkaTemplate<String, String> kafkaTemplate) {
+    public LogService(KafkaTemplate<String, LogRecord> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
@@ -31,12 +31,8 @@ public class LogService {
         validateLevel(log.level());
         validateMessage(log.message());
 
-        String logMessage = String.format(
-                "Timestamp: %s, Level: %s, Message: %s, Source: %s, Thread: %s, Logger: %s",
-                log.timestamp(), log.level(), log.message(), log.source(), log.thread(), log.logger()
-        );
-
-        sendLogToKafka(logMessage);
+        // Send LogRecord directly to Kafka
+        sendLogToKafka(log);
     }
 
     public LogRecord parsePlaintextLog(String logText) {
@@ -96,13 +92,13 @@ public class LogService {
         }
     }
 
-    private void sendLogToKafka(String logMessage) {
-        CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send(KAFKA_TOPIC, logMessage);
+    private void sendLogToKafka(LogRecord logRecord) {
+        CompletableFuture<SendResult<String, LogRecord>> future = kafkaTemplate.send(KAFKA_TOPIC, logRecord);
 
         future.thenAccept(result ->
-                logger.info("Successfully sent log to Kafka: {}", logMessage)
+                logger.info("Successfully sent log to Kafka: {}", logRecord)
         ).exceptionally(ex -> {
-            logger.error("Failed to send log to Kafka: {}", logMessage, ex);
+            logger.error("Failed to send log to Kafka: {}", logRecord, ex);
             return null;
         });
     }
