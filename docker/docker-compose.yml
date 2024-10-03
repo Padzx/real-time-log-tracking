@@ -24,7 +24,7 @@ services:
   kafka:
     image: confluentinc/cp-kafka:7.5.0
     container_name: kafka
-    user: "root" # To avoid the lack of user permission (not a recommended practice but effective in test cases)
+    user: "root"
     ports:
       - "9092:9092"
       - "7071:7071"
@@ -34,13 +34,14 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_OPTS: "-Dlog4j.configuration=file:/etc/kafka/log4j.properties -javaagent:/opt/jmx_prometheus_javaagent.jar=7071:/etc/jmx_exporter.yml"
+      KAFKA_OPTS: "-Dlog4j.configuration=file:/opt/kafka/config/log4j.properties -javaagent:/opt/jmx_prometheus_javaagent.jar=7072:/etc/jmx_exporter.yml"
     volumes:
       - ./kafka/jmx_prometheus/jmx_prometheus_javaagent-1.0.1.jar:/opt/jmx_prometheus_javaagent.jar
-      - ./kafka/properties/server.properties:/etc/kafka/server.properties
-      - ./kafka/properties/log4j.properties:/etc/kafka/log4j.properties
+      - ./kafka/properties/server.properties:/opt/kafka/config/server.properties
+      - ./kafka/properties/log4j.properties:/opt/kafka/config/log4j.properties
       - ./kafka/jmx_exporter/jmx_exporter.yml:/etc/jmx_exporter.yml
       - ./kafka/data:/var/lib/kafka/data
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - docker_kafka_net
     depends_on:
