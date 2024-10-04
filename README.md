@@ -103,7 +103,8 @@ Interaction with Kafka:
 
 Consumes Kafka topic logs, enabling large-scale and efficient processing.
 You can publish the processed data back to new Kafka topics or send it directly to final storage, depending on the chosen architecture.
-Database:
+
+**Database:**
 
 Stores processed logs in PostgreSQL, ensuring that data is organized and indexed to facilitate future queries.
 It supports both real-time processing (streaming) and batch processing, according to operational needs.
