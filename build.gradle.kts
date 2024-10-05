@@ -43,7 +43,7 @@ subprojects {
             exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
         }
         testImplementation("org.assertj:assertj-core:3.26.3")
-        testImplementation("org.springframework.kafka:spring-kafka-test:3.2.7")
+        testImplementation("org.springframework.kafka:spring-kafka-test:3.2.4")
     }
 
     tasks.named("check") {
