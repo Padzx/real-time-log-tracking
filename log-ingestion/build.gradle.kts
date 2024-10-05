@@ -39,7 +39,7 @@ dependencies {
     // Testcontainers dependencies
     testImplementation("org.testcontainers:junit-jupiter:1.19.7")
     testImplementation("org.testcontainers:kafka:1.20.1")
-    testImplementation("org.testcontainers:postgresql:1.20.1")
+    testImplementation("org.testcontainers:postgresql:1.20.2")
 }
 
 springBoot {
