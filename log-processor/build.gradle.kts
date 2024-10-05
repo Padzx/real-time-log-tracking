@@ -21,7 +21,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("jakarta.validation:jakarta.validation-api:3.0.2")
+    implementation("jakarta.validation:jakarta.validation-api:3.1.0")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")
     implementation("org.springframework.kafka:spring-kafka:3.2.3")
     implementation("org.apache.commons:commons-compress:1.27.1")
