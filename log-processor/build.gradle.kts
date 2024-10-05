@@ -23,7 +23,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("jakarta.validation:jakarta.validation-api:3.0.2")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")
-    implementation("org.springframework.kafka:spring-kafka:3.2.3")
+    implementation("org.springframework.kafka:spring-kafka:3.2.4")
     implementation("org.apache.commons:commons-compress:1.27.1")
     implementation("org.hibernate.validator:hibernate-validator:8.0.0.Final")
     implementation("org.glassfish:jakarta.el:4.0.2")
@@ -41,7 +41,7 @@ dependencies {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
     testImplementation("org.assertj:assertj-core:3.24.2")
-    testImplementation("org.springframework.kafka:spring-kafka-test:3.2.3")
+    testImplementation("org.springframework.kafka:spring-kafka-test:3.2.4")
 
     // Mockito for mocking
     testImplementation("org.mockito:mockito-core:5.13.0")
