@@ -41,7 +41,7 @@ dependencies {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
     testImplementation("org.assertj:assertj-core:3.24.2")
-    testImplementation("org.springframework.kafka:spring-kafka-test:3.2.3")
+    testImplementation("org.springframework.kafka:spring-kafka-test:3.2.4")
 
     // Mockito for mocking
     testImplementation("org.mockito:mockito-core:5.13.0")
